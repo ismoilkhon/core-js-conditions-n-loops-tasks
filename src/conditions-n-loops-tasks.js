@@ -507,23 +507,33 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  const res = arr;
-  const n = res.length;
+  if (arr.length < 2) {
+    return arr;
+  }
 
-  for (let i = 0; i < n - 1; i += 1) {
-    let minIndex = i;
-    for (let j = i + 1; j < n; j += 1) {
-      if (res[j] < res[minIndex]) {
-        minIndex = j;
-      }
-    }
-    if (minIndex !== i) {
-      const temp = res[i];
-      res[i] = res[minIndex];
-      res[minIndex] = temp;
+  let low = [];
+  let high = [];
+  let arrCopy = arr;
+  const pivot = arrCopy[0];
+
+  for (let i = 1; i < arrCopy.length; i += 1) {
+    if (arrCopy[i] < pivot) {
+      low[low.length] = arrCopy[i];
+    } else {
+      high[high.length] = arrCopy[i];
     }
   }
-  return res;
+
+  low = sortByAsc(low);
+  high = sortByAsc(high);
+  arrCopy = [...low, pivot, ...high];
+
+  const result = arr;
+  for (let i = 0; i < arrCopy.length; i += 1) {
+    result[i] = arrCopy[i];
+  }
+
+  return arr;
 }
 
 /**
@@ -544,30 +554,23 @@ function sortByAsc(arr) {
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
 function shuffleChar(str, iterations) {
-  const n = str.length;
-  const chars = new Array(n);
-  for (let i = 0; i < n; i += 1) {
-    chars[i] = str[i];
+  if (!str || !iterations || iterations < 1) {
+    return str;
   }
-  const temp = new Array(n);
-  for (let iter = 0; iter < iterations; iter += 1) {
-    let evenIndex = 0;
-    let oddIndex = Math.floor((n + 1) / 2);
-    for (let i = 0; i < n; i += 2) {
-      temp[evenIndex] = chars[i];
-      evenIndex += 1;
+  const { length } = str;
+  let result = str;
+  for (let i = 1; i <= iterations; i += 1) {
+    let left = '';
+    let right = '';
+    for (let j = 0; j < length; j += 1) {
+      if (j % 2 === 0) {
+        left += result[j];
+      } else {
+        right += result[j];
+      }
     }
-    for (let i = 1; i < n; i += 2) {
-      temp[oddIndex] = chars[i];
-      oddIndex += 1;
-    }
-    for (let i = 0; i < n; i += 1) {
-      chars[i] = temp[i];
-    }
-  }
-  let result = '';
-  for (let i = 0; i < n; i += 1) {
-    result += chars[i];
+    result = left + right;
+    if (result === str) return shuffleChar(str, iterations % i);
   }
   return result;
 }
